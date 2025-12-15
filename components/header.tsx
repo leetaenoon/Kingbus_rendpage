@@ -1,88 +1,107 @@
-"use client"
+"use client";
 
-import { Menu, X, ChevronDown, Heart } from "lucide-react"
-import { useState, useRef } from "react"
-import { Button } from "@/components/ui/button"
-
-const categories = [
-  { id: "wedding", name: "결혼식", icon: "💒" },
-  { id: "workshop", name: "워크샵", icon: "💼" },
-  { id: "hiking", name: "산악회", icon: "⛰️" },
-  { id: "mt", name: "MT/현장학습", icon: "🎒" },
-  { id: "concert", name: "콘서트", icon: "🎤" },
-  { id: "golf", name: "골프", icon: "⛳" },
-  { id: "fishing", name: "낚시", icon: "🎣" },
-  { id: "commute", name: "통근/셔틀", icon: "🏢" },
-  { id: "kindergarten", name: "어린이집", icon: "👶" },
-]
+import { Menu, X, ChevronDown, Heart, Sun, Moon } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isCustomerServiceOpen, setIsCustomerServiceOpen] = useState(false)
-  const [isInterestModalOpen, setIsInterestModalOpen] = useState(false)
-  const [selectedInterest, setSelectedInterest] = useState<string | null>(null)
-  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCustomerServiceOpen, setIsCustomerServiceOpen] = useState(false);
+  const [isInterestModalOpen, setIsInterestModalOpen] = useState(false);
+  const [selectedInterest, setSelectedInterest] = useState<string | null>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 테마 설정 훅
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // 하이드레이션 매칭 보장
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleMouseEnter = () => {
     if (closeTimeoutRef.current) {
-      clearTimeout(closeTimeoutRef.current)
-      closeTimeoutRef.current = null
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
     }
-    setIsCustomerServiceOpen(true)
-  }
+    setIsCustomerServiceOpen(true);
+  };
 
   const handleMouseLeave = () => {
     closeTimeoutRef.current = setTimeout(() => {
-      setIsCustomerServiceOpen(false)
-    }, 300)
-  }
+      setIsCustomerServiceOpen(false);
+    }, 300);
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
+
+  const categories = [
+    { id: "wedding", name: "결혼식", icon: "💒" },
+    { id: "workshop", name: "워크샵", icon: "💼" },
+    { id: "hiking", name: "산악회", icon: "⛰️" },
+    { id: "mt", name: "MT/현장학습", icon: "🎒" },
+    { id: "concert", name: "콘서트", icon: "🎤" },
+    { id: "golf", name: "골프", icon: "⛳" },
+    { id: "fishing", name: "낚시", icon: "🎣" },
+    { id: "commute", name: "통근/셔틀", icon: "🏢" },
+    { id: "kindergarten", name: "어린이집", icon: "👶" },
+  ];
 
   const handleSelectInterest = (categoryId: string) => {
-    setSelectedInterest(categoryId)
-    setIsInterestModalOpen(false)
-  }
+    setSelectedInterest(categoryId);
+    setIsInterestModalOpen(false);
+  };
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-black border-b border-gray-800 shadow-sm">
+      {/* 배경: bg-background (테마따라 변함) / 글자: text-foreground (테마따라 변함) */}
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
+            {/* 로고 */}
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center shadow-md">
                 <span className="text-xl font-bold text-white">🚌</span>
               </div>
-              <span className="text-2xl font-bold text-white">킹버스</span>
+              <span className="text-2xl font-bold text-foreground transition-colors">
+                킹버스
+              </span>
             </div>
 
-            {/* Desktop Navigation */}
+            {/* PC 메뉴 */}
             <nav className="hidden md:flex items-center gap-8">
-              <a
-                href="#features"
-                className="text-white hover:text-red-600 transition-colors duration-300 text-sm font-medium"
-              >
-                특징
-              </a>
-              <a
-                href="#testimonials"
-                className="text-white hover:text-red-600 transition-colors duration-300 text-sm font-medium"
-              >
-                후기
-              </a>
-              <a
-                href="#contact"
-                className="text-white hover:text-red-600 transition-colors duration-300 text-sm font-medium"
-              >
-                연락처
-              </a>
-              <a href="#" className="text-white hover:text-red-600 transition-colors duration-300 text-sm font-medium">
-                앱 다운로드
-              </a>
+              {["특징", "후기", "연락처", "앱 다운로드"].map((item) => (
+                <a
+                  key={item}
+                  href="#"
+                  className="text-muted-foreground hover:text-red-600 transition-colors duration-200 text-sm font-medium"
+                >
+                  {item}
+                </a>
+              ))}
             </nav>
 
-            {/* Desktop CTA */}
+            {/* PC 우측 버튼들 */}
             <div className="hidden md:flex items-center gap-4">
+              {/* 테마 버튼 */}
               <button
-                className="flex items-center gap-1 text-white hover:text-red-600 transition-colors duration-300 text-sm font-medium"
+                onClick={toggleTheme}
+                className="p-2 rounded-full hover:bg-accent text-foreground transition-colors"
+                aria-label="테마 변경"
+              >
+                {mounted && theme === "dark" ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
+              </button>
+
+              <button
+                className="flex items-center gap-1 text-muted-foreground hover:text-red-600 transition-colors duration-200 text-sm font-medium"
                 onClick={() => setIsInterestModalOpen(true)}
               >
                 <Heart className="w-4 h-4" />
@@ -91,8 +110,10 @@ export default function Header() {
 
               <div className="relative">
                 <button
-                  className="flex items-center gap-1 text-white hover:text-red-600 transition-colors duration-300 text-sm font-medium"
-                  onClick={() => setIsCustomerServiceOpen(!isCustomerServiceOpen)}
+                  className="flex items-center gap-1 text-muted-foreground hover:text-red-600 transition-colors duration-200 text-sm font-medium"
+                  onClick={() =>
+                    setIsCustomerServiceOpen(!isCustomerServiceOpen)
+                  }
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
                 >
@@ -102,7 +123,7 @@ export default function Header() {
 
                 {isCustomerServiceOpen && (
                   <div
-                    className="absolute top-full mt-2 w-40 bg-gray-900 border border-gray-700 rounded-lg shadow-lg overflow-hidden"
+                    className="absolute top-full right-0 mt-2 w-40 bg-popover border border-border rounded-lg shadow-lg overflow-hidden"
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                   >
@@ -110,7 +131,7 @@ export default function Header() {
                       href="https://pf.kakao.com/_wGHxfT"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block px-4 py-3 text-white hover:bg-red-600 transition-colors duration-300 text-sm"
+                      className="block px-4 py-3 text-popover-foreground hover:bg-red-600 hover:text-white transition-colors text-sm"
                     >
                       전화상담
                     </a>
@@ -118,7 +139,7 @@ export default function Header() {
                       href="https://pf.kakao.com/_wGHxfT"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block px-4 py-3 text-white hover:bg-red-600 transition-colors duration-300 text-sm"
+                      className="block px-4 py-3 text-popover-foreground hover:bg-red-600 hover:text-white transition-colors text-sm"
                     >
                       1:1상담
                     </a>
@@ -127,112 +148,95 @@ export default function Header() {
               </div>
 
               <Button
-                className="bg-red-600 text-white hover:bg-red-700"
+                className="bg-red-600 text-white hover:bg-red-700 shadow-md transition-all hover:scale-105"
                 onClick={() => window.open("https://m.kingbus.kr/", "_blank")}
               >
                 예약하러 가기
               </Button>
             </div>
 
-            {/* Mobile Menu Button */}
-            <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
-              {isMenuOpen ? <X className="w-6 h-6 text-white" /> : <Menu className="w-6 h-6 text-white" />}
-            </button>
+            {/* 모바일 메뉴 버튼 */}
+            <div className="flex items-center gap-3 md:hidden">
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-full hover:bg-accent text-foreground transition-colors"
+              >
+                {mounted && theme === "dark" ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
+              </button>
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="text-foreground p-1"
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
           </div>
 
-          {/* Mobile Navigation */}
+          {/* 모바일 메뉴 드로어 */}
           {isMenuOpen && (
-            <div className="md:hidden pb-4 border-t border-gray-800">
-              <nav className="flex flex-col gap-3 pt-4">
-                <a
-                  href="#features"
-                  className="text-white hover:text-red-600 transition-colors duration-300 px-2 py-2 font-medium"
-                >
-                  특징
-                </a>
-                <a
-                  href="#testimonials"
-                  className="text-white hover:text-red-600 transition-colors duration-300 px-2 py-2 font-medium"
-                >
-                  후기
-                </a>
-                <a
-                  href="#contact"
-                  className="text-white hover:text-red-600 transition-colors duration-300 px-2 py-2 font-medium"
-                >
-                  연락처
-                </a>
-                <a
-                  href="#"
-                  className="text-white hover:text-red-600 transition-colors duration-300 px-2 py-2 font-medium"
-                >
-                  앱 다운로드
-                </a>
-
-                <button
-                  className="flex items-center gap-2 text-white hover:text-red-600 transition-colors duration-300 px-2 py-2 font-medium text-left"
-                  onClick={() => setIsInterestModalOpen(true)}
-                >
-                  <Heart className="w-4 h-4" />
-                  관심있는 분야
-                </button>
-
-                <div className="border-t border-gray-800 pt-3 mt-2">
-                  <p className="text-gray-400 text-sm px-2 mb-2">고객센터</p>
+            <div className="md:hidden pb-6 border-t border-border animate-in slide-in-from-top-2">
+              <nav className="flex flex-col gap-1 pt-4">
+                {["특징", "후기", "연락처", "앱 다운로드"].map((item) => (
                   <a
-                    href="https://pf.kakao.com/_wGHxfT"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-white hover:text-red-600 transition-colors duration-300 px-2 py-2 font-medium"
+                    key={item}
+                    href="#"
+                    className="text-foreground hover:text-red-600 hover:bg-accent/50 rounded-md transition-colors px-3 py-3 font-medium text-base"
                   >
-                    전화상담
+                    {item}
                   </a>
-                  <a
-                    href="https://pf.kakao.com/_wGHxfT"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-white hover:text-red-600 transition-colors duration-300 px-2 py-2 font-medium"
+                ))}
+                <div className="px-2 mt-2">
+                  <Button
+                    className="w-full bg-red-600 text-white hover:bg-red-700 h-11 text-base"
+                    onClick={() =>
+                      window.open("https://m.kingbus.kr/", "_blank")
+                    }
                   >
-                    1:1상담
-                  </a>
+                    예약하러 가기
+                  </Button>
                 </div>
-
-                <Button
-                  className="w-full bg-red-600 text-white hover:bg-red-700 mt-3"
-                  onClick={() => window.open("https://m.kingbus.kr/", "_blank")}
-                >
-                  예약하러 가기
-                </Button>
               </nav>
             </div>
           )}
         </div>
       </header>
 
+      {/* 모달 */}
       {isInterestModalOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in"
           onClick={() => setIsInterestModalOpen(false)}
         >
-          {/* 하얀색 불투명 배경 */}
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm" />
-
-          {/* 모달 컨텐츠 */}
           <div
-            className="relative bg-black rounded-2xl p-8 max-w-2xl w-full mx-4 shadow-2xl border border-gray-800"
+            className="relative bg-card rounded-2xl p-6 md:p-8 max-w-2xl w-full shadow-2xl border border-border"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-2xl font-bold text-white text-center mb-2">관심있는 분야를 선택하세요</h2>
-            <p className="text-gray-400 text-center mb-8">선택한 분야에 맞는 맞춤 정보를 제공해 드립니다</p>
-
-            <div className="grid grid-cols-3 gap-4">
+            <button
+              onClick={() => setIsInterestModalOpen(false)}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <h2 className="text-2xl font-bold text-foreground text-center mb-2">
+              관심있는 분야를 선택하세요
+            </h2>
+            <div className="grid grid-cols-3 gap-3 md:gap-4 mt-6">
               {categories.map((category) => (
                 <button
                   key={category.id}
-                  className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-300 ${
+                  className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-200 border ${
                     selectedInterest === category.id
-                      ? "bg-red-600 text-white"
-                      : "bg-gray-800 text-white hover:bg-gray-700"
+                      ? "bg-red-600 text-white border-red-600 shadow-lg scale-105"
+                      : "bg-accent/50 text-foreground border-transparent hover:bg-accent hover:border-border"
                   }`}
                   onClick={() => handleSelectInterest(category.id)}
                 >
@@ -241,11 +245,9 @@ export default function Header() {
                 </button>
               ))}
             </div>
-
-            <p className="text-gray-500 text-sm text-center mt-6">화면 바깥을 클릭하면 닫힙니다</p>
           </div>
         </div>
       )}
     </>
-  )
+  );
 }

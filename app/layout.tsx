@@ -8,7 +8,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ProBus - 버스 대절11 서비스",
+  title: "ProBus - 버스 대절 서비스",
   description:
     "신뢰할 수 있는 버스 대절 서비스. 여행, 단체 모임, 특별한 행사를 위한 최고의 선택",
   generator: "v0.app",
